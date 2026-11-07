@@ -72,7 +72,9 @@ func main() {
 		cancel()
 	}()
 
-	log.Printf("[LCP-MC-Client] Ready! You can now join Minecraft server via: %s", *listenAddr)
+	actualAddr := listener.Addr().String()
+	fmt.Printf("[LCP-MC-Client] LISTENING_ON %s\n", actualAddr)
+	log.Printf("[LCP-MC-Client] Ready! You can now join Minecraft server via: %s", actualAddr)
 
 	for {
 		clientTCP, err := listener.Accept()

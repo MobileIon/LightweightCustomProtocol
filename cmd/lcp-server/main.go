@@ -63,7 +63,7 @@ func main() {
 	fmt.Println("=================================================================")
 
 	// 2. Setup server stream handler
-	handler := func(ctx context.Context, stream *quic.Stream) {
+	handler := func(ctx context.Context, stream *quic.Stream, conn *quic.Conn) {
 		req, err := protocol.ReadPacket(stream)
 		if err != nil {
 			return

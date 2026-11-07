@@ -92,7 +92,7 @@ func TestMinecraftTunnelEndToEnd(t *testing.T) {
 		DisasterCert: certDisaster,
 		PortStrict:   portStrict,
 		PortDisaster: portDisaster,
-		Handler: func(sCtx context.Context, stream *quic.Stream) {
+		Handler: func(sCtx context.Context, stream *quic.Stream, conn *quic.Conn) {
 			mcConn, err := net.Dial("tcp", mcServerAddr)
 			if err != nil {
 				return

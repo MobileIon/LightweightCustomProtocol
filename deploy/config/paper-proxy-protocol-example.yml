@@ -1,0 +1,21 @@
+# ==============================================================================
+# Paper / Purpur / Velocity Proxy Protocol v2 配置说明
+# ==============================================================================
+
+# 1. 如果你的后端服务器是 Paper / Purpur 1.20.1+:
+# 在服务端根目录下的 config/paper-global.yml 中找到 proxies 节点，修改为：
+proxies:
+  bungee-cord:
+    online-mode: true
+  proxy-protocol: true # <--- 将此处设为 true，Paper 即可原生解析 LCP 网关传递的玩家真实 IPv4/IPv6 地址！
+  velocity:
+    enabled: false
+    online-mode: false
+    secret: ''
+
+# 2. 如果你的前端是 Velocity 代理网关：
+# 在 velocity.toml 中：
+# haproxy-protocol = true
+
+# 3. 如果你的后端是原生 Forge / Fabric（未安装 Proxy Protocol 支持模组）：
+# 在运行 lcp-mc-server 时，将参数设为 -proxy-protocol=false 即可，网关将直接作为纯透明双向 TCP 管道转发。

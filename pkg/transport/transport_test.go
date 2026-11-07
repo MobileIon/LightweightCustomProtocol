@@ -74,7 +74,7 @@ func TestTransportEchoAndSPKIPinning(t *testing.T) {
 	portDisaster := 28855
 
 	// Server echo handler
-	handler := func(sCtx context.Context, st *quic.Stream) {
+	handler := func(sCtx context.Context, st *quic.Stream, conn *quic.Conn) {
 		req, err := protocol.ReadPacket(st)
 		if err != nil {
 			return

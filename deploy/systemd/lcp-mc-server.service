@@ -1,0 +1,24 @@
+[Unit]
+Description=LCP Minecraft Server Gateway (QUIC UDP 856/855 -> TCP 25565)
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/lcp-mc-server
+ExecStart=/opt/lcp-mc-server/lcp-mc-server-linux \
+  -port-strict=856 \
+  -port-disaster=855 \
+  -target=127.0.0.1:25565 \
+  -proxy-protocol=true \
+  -cert-strict=/etc/letsencrypt/live/mc.potatolight.cn/fullchain.pem \
+  -key-strict=/etc/letsencrypt/live/mc.potatolight.cn/privkey.pem \
+  -cert-disaster=/opt/lcp-mc-server/certs/disaster.crt \
+  -key-disaster=/opt/lcp-mc-server/certs/disaster.key
+Restart=always
+RestartSec=5s
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

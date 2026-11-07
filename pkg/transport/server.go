@@ -24,7 +24,7 @@ var (
 )
 
 // StreamHandler handles an incoming QUIC stream.
-type StreamHandler func(ctx context.Context, stream *quic.Stream)
+type StreamHandler func(ctx context.Context, stream *quic.Stream, conn *quic.Conn)
 
 // ServerConfig defines server options.
 type ServerConfig struct {
@@ -180,7 +180,7 @@ func (s *LcpServer) handleConnection(ctx context.Context, conn *quic.Conn) {
 			}()
 
 			if s.cfg.Handler != nil {
-				s.cfg.Handler(ctx, st)
+				s.cfg.Handler(ctx, st, conn)
 			}
 		}(stream)
 	}

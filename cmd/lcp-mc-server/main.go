@@ -61,7 +61,7 @@ func main() {
 	fmt.Println("=================================================================")
 
 	// 2. Stream Handler: bridges QUIC stream <---> Minecraft Local TCP
-	handler := func(ctx context.Context, stream *quic.Stream) {
+	handler := func(ctx context.Context, stream *quic.Stream, conn *quic.Conn) {
 		mcConn, err := net.DialTimeout("tcp", *targetMC, 3*time.Second)
 		if err != nil {
 			log.Printf("[LCP-MC-Gateway] Failed to connect to local MC server %s: %v", *targetMC, err)
@@ -69,10 +69,9 @@ func main() {
 		}
 		defer mcConn.Close()
 
-		// Optional: Prepend HAProxy Proxy Protocol v2 header
+		// Optional: Prepend HAProxy Proxy Protocol v2 header with real client IP
 		if *enableProxyProto {
-			// Extract client remote address from stream context / dummy
-			ppv2Header := mctunnel.BuildProxyProtocolV2Header(mcConn.RemoteAddr(), mcConn.LocalAddr())
+			ppv2Header := mctunnel.BuildProxyProtocolV2Header(conn.RemoteAddr(), mcConn.LocalAddr())
 			if _, err := mcConn.Write(ppv2Header); err != nil {
 				log.Printf("[LCP-MC-Gateway] Failed to write Proxy Protocol v2 header: %v", err)
 				return
