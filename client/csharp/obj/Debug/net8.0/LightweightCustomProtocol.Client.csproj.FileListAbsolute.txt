@@ -1,0 +1,12 @@
+E:\MCCP\LightweightCustomProtocol\client\csharp\obj\Debug\net8.0\LightweightCustomProtocol.Client.GeneratedMSBuildEditorConfig.editorconfig
+E:\MCCP\LightweightCustomProtocol\client\csharp\obj\Debug\net8.0\LightweightCustomProtocol.Client.AssemblyInfoInputs.cache
+E:\MCCP\LightweightCustomProtocol\client\csharp\obj\Debug\net8.0\LightweightCustomProtocol.Client.AssemblyInfo.cs
+E:\MCCP\LightweightCustomProtocol\client\csharp\obj\Debug\net8.0\LightweightCustomProtocol.Client.csproj.CoreCompileInputs.cache
+E:\MCCP\LightweightCustomProtocol\client\csharp\obj\Debug\net8.0\LightweightCustomProtocol.Client.sourcelink.json
+E:\MCCP\LightweightCustomProtocol\client\csharp\bin\Debug\net8.0\LightweightCustomProtocol.Client.deps.json
+E:\MCCP\LightweightCustomProtocol\client\csharp\bin\Debug\net8.0\LightweightCustomProtocol.Client.dll
+E:\MCCP\LightweightCustomProtocol\client\csharp\bin\Debug\net8.0\LightweightCustomProtocol.Client.pdb
+E:\MCCP\LightweightCustomProtocol\client\csharp\obj\Debug\net8.0\LightweightCustomProtocol.Client.dll
+E:\MCCP\LightweightCustomProtocol\client\csharp\obj\Debug\net8.0\refint\LightweightCustomProtocol.Client.dll
+E:\MCCP\LightweightCustomProtocol\client\csharp\obj\Debug\net8.0\LightweightCustomProtocol.Client.pdb
+E:\MCCP\LightweightCustomProtocol\client\csharp\obj\Debug\net8.0\ref\LightweightCustomProtocol.Client.dll

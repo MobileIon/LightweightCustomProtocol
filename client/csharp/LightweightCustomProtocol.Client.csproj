@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
+    <LangVersion>12</LangVersion>
+    <NoWarn>$(NoWarn);CA1416;CA2252</NoWarn>
+  </PropertyGroup>
+
+</Project>
