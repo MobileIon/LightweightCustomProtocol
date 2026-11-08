@@ -26,7 +26,7 @@ import (
 func main() {
 	portStrict := flag.Int("port-strict", transport.DefaultPortStrict, "LCP strict TLS 1.3 UDP port")
 	portDisaster := flag.Int("port-disaster", transport.DefaultPortDisaster, "LCP disaster recovery UDP port")
-	targetMC := flag.String("target", "127.0.0.1:25565", "Local Minecraft dedicated server TCP address")
+	targetMC := flag.String("target", "[::1]:25565", "Local Minecraft dedicated server TCP address")
 	enableProxyProto := flag.Bool("proxy-protocol", false, "Send HAProxy Proxy Protocol v2 header to MC server (Paper/Velocity real IP)")
 	certStrictPath := flag.String("cert-strict", "", "Path to public CA certificate file")
 	keyStrictPath := flag.String("key-strict", "", "Path to public CA private key file")

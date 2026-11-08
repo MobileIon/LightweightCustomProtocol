@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	listenAddr := flag.String("listen", "127.0.0.1:25565", "Local TCP listen address for Minecraft Client to connect to")
+	listenAddr := flag.String("listen", "[::1]:25565", "Local TCP listen address for Minecraft Client to connect to")
 	serverHost := flag.String("server", "mc.potatolight.cn", "Remote LCP Minecraft Server domain / SNI")
 	portStrict := flag.Int("port-strict", transport.DefaultPortStrict, "Remote LCP strict UDP port (856)")
 	portDisaster := flag.Int("port-disaster", transport.DefaultPortDisaster, "Remote LCP disaster UDP port (855)")

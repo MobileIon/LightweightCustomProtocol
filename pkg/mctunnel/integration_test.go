@@ -55,7 +55,7 @@ func TestMinecraftTunnelEndToEnd(t *testing.T) {
 	defer cancel()
 
 	// 1. Mock Minecraft Dedicated Server listening on local TCP
-	mcListener, err := net.Listen("tcp", "127.0.0.1:0")
+	mcListener, err := net.Listen("tcp", "[::1]:0")
 	if err != nil {
 		t.Fatalf("Failed to start mock MC server: %v", err)
 	}
@@ -117,7 +117,7 @@ func TestMinecraftTunnelEndToEnd(t *testing.T) {
 	})
 	defer lcpClient.Close()
 
-	localBridgeListener, err := net.Listen("tcp", "127.0.0.1:0")
+	localBridgeListener, err := net.Listen("tcp", "[::1]:0")
 	if err != nil {
 		t.Fatalf("Failed to start local bridge: %v", err)
 	}

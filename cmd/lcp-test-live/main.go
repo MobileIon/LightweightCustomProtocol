@@ -50,7 +50,7 @@ func testProxyProtocol(serverExe, clientExe string) {
 	lcpDisaster := 46855
 	clientPort := 46566
 
-	mcListener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", mcPort))
+	mcListener, err := net.Listen("tcp", fmt.Sprintf("[::1]:%d", mcPort))
 	if err != nil {
 		log.Fatalf("testProxyProtocol: Listen failed: %v", err)
 	}
@@ -65,16 +65,16 @@ func testProxyProtocol(serverExe, clientExe string) {
 		}
 		defer conn.Close()
 
-		// The first 28 bytes for IPv4 should be the Proxy Protocol v2 header
-		headerBuf := make([]byte, 28)
-		_, _ = io.ReadFull(conn, headerBuf)
-		ppv2HeaderChan <- headerBuf
+		// Read up to 52 bytes for Proxy Protocol v2 header
+		headerBuf := make([]byte, 52)
+		n, _ := io.ReadFull(conn, headerBuf)
+		ppv2HeaderChan <- headerBuf[:n]
 
 		// Echo back remaining data
 		buf := make([]byte, 4096)
-		n, _ := conn.Read(buf)
-		if n > 0 {
-			_, _ = conn.Write(buf[:n])
+		nRead, _ := conn.Read(buf)
+		if nRead > 0 {
+			_, _ = conn.Write(buf[:nRead])
 		}
 	}()
 
@@ -84,7 +84,7 @@ func testProxyProtocol(serverExe, clientExe string) {
 	cmdServer := exec.CommandContext(ctx, serverExe,
 		fmt.Sprintf("-port-strict=%d", lcpStrict),
 		fmt.Sprintf("-port-disaster=%d", lcpDisaster),
-		fmt.Sprintf("-target=127.0.0.1:%d", mcPort),
+		fmt.Sprintf("-target=[::1]:%d", mcPort),
 		"-proxy-protocol=true", // Enable Proxy Protocol v2
 	)
 	_ = cmdServer.Start()
@@ -92,7 +92,7 @@ func testProxyProtocol(serverExe, clientExe string) {
 	time.Sleep(1000 * time.Millisecond)
 
 	cmdClient := exec.CommandContext(ctx, clientExe,
-		fmt.Sprintf("-listen=127.0.0.1:%d", clientPort),
+		fmt.Sprintf("-listen=[::1]:%d", clientPort),
 		"-server=127.0.0.1",
 		fmt.Sprintf("-port-strict=%d", lcpStrict),
 		fmt.Sprintf("-port-disaster=%d", lcpDisaster),
@@ -103,7 +103,7 @@ func testProxyProtocol(serverExe, clientExe string) {
 	time.Sleep(1000 * time.Millisecond)
 
 	// Connect client
-	clientConn, err := net.Dial("tcp", fmt.Sprintf("127.0.0.1:%d", clientPort))
+	clientConn, err := net.Dial("tcp", fmt.Sprintf("[::1]:%d", clientPort))
 	if err != nil {
 		log.Fatalf("testProxyProtocol: Client Dial failed: %v", err)
 	}
@@ -140,7 +140,7 @@ func testConcurrentPlayers(serverExe, clientExe string, playerCount int) {
 	lcpDisaster := 47855
 	clientPort := 47566
 
-	mcListener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", mcPort))
+	mcListener, err := net.Listen("tcp", fmt.Sprintf("[::1]:%d", mcPort))
 	if err != nil {
 		log.Fatalf("testConcurrentPlayers: Listen failed: %v", err)
 	}
@@ -177,7 +177,7 @@ func testConcurrentPlayers(serverExe, clientExe string, playerCount int) {
 	cmdServer := exec.CommandContext(ctx, serverExe,
 		fmt.Sprintf("-port-strict=%d", lcpStrict),
 		fmt.Sprintf("-port-disaster=%d", lcpDisaster),
-		fmt.Sprintf("-target=127.0.0.1:%d", mcPort),
+		fmt.Sprintf("-target=[::1]:%d", mcPort),
 		"-proxy-protocol=false",
 	)
 	_ = cmdServer.Start()
@@ -185,7 +185,7 @@ func testConcurrentPlayers(serverExe, clientExe string, playerCount int) {
 	time.Sleep(1000 * time.Millisecond)
 
 	cmdClient := exec.CommandContext(ctx, clientExe,
-		fmt.Sprintf("-listen=127.0.0.1:%d", clientPort),
+		fmt.Sprintf("-listen=[::1]:%d", clientPort),
 		"-server=127.0.0.1",
 		fmt.Sprintf("-port-strict=%d", lcpStrict),
 		fmt.Sprintf("-port-disaster=%d", lcpDisaster),
@@ -205,7 +205,7 @@ func testConcurrentPlayers(serverExe, clientExe string, playerCount int) {
 			defer wg.Done()
 			<-startBarrier
 
-			c, err := net.Dial("tcp", fmt.Sprintf("127.0.0.1:%d", clientPort))
+			c, err := net.Dial("tcp", fmt.Sprintf("[::1]:%d", clientPort))
 			if err != nil {
 				log.Fatalf("Player %d connect error: %v", playerID, err)
 			}

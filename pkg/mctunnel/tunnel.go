@@ -27,8 +27,8 @@ func BuildProxyProtocolV2Header(srcAddr, dstAddr net.Addr) []byte {
 		dstPort = dstTCP.Port
 	} else {
 		// Fallback for UDP or other addresses
-		srcIP = net.ParseIP("127.0.0.1")
-		dstIP = net.ParseIP("127.0.0.1")
+		srcIP = net.ParseIP("::1")
+		dstIP = net.ParseIP("::1")
 		srcPort = 25565
 		dstPort = 25565
 	}

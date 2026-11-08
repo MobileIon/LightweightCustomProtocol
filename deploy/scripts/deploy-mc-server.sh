@@ -35,7 +35,7 @@ if [ ! -f "$DISASTER_CERT" ] || [ ! -f "$DISASTER_KEY" ]; then
         -keyout "$DISASTER_KEY" \
         -out "$DISASTER_CERT" \
         -subj "/CN=lcp-mc-disaster" \
-        -addext "subjectAltName=DNS:lcp-mc-disaster,IP:127.0.0.1"
+        -addext "subjectAltName=DNS:lcp-mc-disaster,IP:::1,IP:127.0.0.1"
     echo "[+] 灾备证书生成完毕。"
 else
     echo "[*] 已存在灾备证书，跳过生成。"
@@ -78,7 +78,7 @@ WorkingDirectory=$INSTALL_DIR
 ExecStart=$INSTALL_DIR/lcp-mc-server-linux \\
   -port-strict=856 \\
   -port-disaster=855 \\
-  -target=127.0.0.1:25565 \\
+  -target=[::1]:25565 \\
   -proxy-protocol=true \\
   -cert-strict=/etc/letsencrypt/live/mc.potatolight.cn/fullchain.pem \\
   -key-strict=/etc/letsencrypt/live/mc.potatolight.cn/privkey.pem \\
