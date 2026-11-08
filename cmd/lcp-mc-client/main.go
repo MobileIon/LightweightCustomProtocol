@@ -93,34 +93,12 @@ func main() {
 		go func(local net.Conn) {
 			defer local.Close()
 
-			dialCtx, dialCancel := context.WithTimeout(ctx, 4*time.Second)
+			dialCtx, dialCancel := context.WithTimeout(ctx, 8*time.Second)
 			defer dialCancel()
 
 			stream, err := client.OpenStream(dialCtx)
 			if err != nil {
-				log.Printf("[LCP-MC-Client] LCP QUIC tunnel unavailable (%v). Attempting transparent direct TCP fallback...", err)
-
-				remoteHost, remotePort, splitErr := net.SplitHostPort(*serverHost)
-				if splitErr != nil {
-					remoteHost = *serverHost
-					remotePort = "25565"
-				}
-
-				targetAddr := net.JoinHostPort(remoteHost, remotePort)
-				remoteTCP, tcpErr := net.DialTimeout("tcp", targetAddr, 5*time.Second)
-				if tcpErr != nil && *fallbackIPv4 != "" {
-					targetAddr = net.JoinHostPort(*fallbackIPv4, remotePort)
-					remoteTCP, tcpErr = net.DialTimeout("tcp", targetAddr, 5*time.Second)
-				}
-
-				if tcpErr != nil {
-					log.Printf("[LCP-MC-Client] Direct TCP fallback to %s failed: %v", targetAddr, tcpErr)
-					return
-				}
-				defer remoteTCP.Close()
-
-				log.Printf("[LCP-MC-Client] Connected via transparent direct TCP fallback to %s!", targetAddr)
-				mctunnel.BidirectionalRelay(local, remoteTCP)
+				log.Printf("[LCP-MC-Client] Failed to open QUIC stream to remote server: %v", err)
 				return
 			}
 			defer func() {
