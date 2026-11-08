@@ -93,7 +93,7 @@ func testProxyProtocol(serverExe, clientExe string) {
 
 	cmdClient := exec.CommandContext(ctx, clientExe,
 		fmt.Sprintf("-listen=[::1]:%d", clientPort),
-		"-server=127.0.0.1",
+		"-server=[::1]",
 		fmt.Sprintf("-port-strict=%d", lcpStrict),
 		fmt.Sprintf("-port-disaster=%d", lcpDisaster),
 		"-insecure-test=true",
@@ -186,7 +186,7 @@ func testConcurrentPlayers(serverExe, clientExe string, playerCount int) {
 
 	cmdClient := exec.CommandContext(ctx, clientExe,
 		fmt.Sprintf("-listen=[::1]:%d", clientPort),
-		"-server=127.0.0.1",
+		"-server=[::1]",
 		fmt.Sprintf("-port-strict=%d", lcpStrict),
 		fmt.Sprintf("-port-disaster=%d", lcpDisaster),
 		"-insecure-test=true",

@@ -81,8 +81,8 @@ func TestMinecraftTunnelEndToEnd(t *testing.T) {
 	}()
 
 	// 2. Start LCP MC Server Gateway (QUIC UDP -> Local TCP)
-	certStrict, _ := generateTestCert(t, "127.0.0.1")
-	certDisaster, spkiDisaster := generateTestCert(t, "127.0.0.1")
+	certStrict, _ := generateTestCert(t, "::1")
+	certDisaster, spkiDisaster := generateTestCert(t, "::1")
 
 	portStrict := 38856
 	portDisaster := 38855
@@ -109,7 +109,7 @@ func TestMinecraftTunnelEndToEnd(t *testing.T) {
 
 	// 3. Start LCP MC Client Bridge (Local TCP -> Remote QUIC UDP)
 	lcpClient := transport.NewClient(transport.ClientConfig{
-		ServerHost:       "127.0.0.1",
+		ServerHost:       "::1",
 		PortStrict:       portStrict,
 		PortDisaster:     portDisaster,
 		PinnedSPKIHashes: []string{spkiDisaster},

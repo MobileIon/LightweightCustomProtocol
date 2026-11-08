@@ -67,8 +67,8 @@ func TestTransportEchoAndSPKIPinning(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	certStrict, _ := generateTestCertificate(t, "127.0.0.1")
-	certDisaster, spkiDisasterHex := generateTestCertificate(t, "127.0.0.1")
+	certStrict, _ := generateTestCertificate(t, "::1")
+	certDisaster, spkiDisasterHex := generateTestCertificate(t, "::1")
 
 	portStrict := 28856
 	portDisaster := 28855
@@ -111,7 +111,7 @@ func TestTransportEchoAndSPKIPinning(t *testing.T) {
 
 	// 1. Test Strict Port (28856) with InsecureSkipCA (simulating valid CA)
 	clientStrict := NewClient(ClientConfig{
-		ServerHost:     "127.0.0.1",
+		ServerHost:     "::1",
 		PortStrict:     portStrict,
 		PortDisaster:   portDisaster,
 		InsecureSkipCA: true,
@@ -142,7 +142,7 @@ func TestTransportEchoAndSPKIPinning(t *testing.T) {
 
 	// 2. Test Disaster Port (28855) with SPKI Pinning (Success)
 	clientDisaster := NewClient(ClientConfig{
-		ServerHost:       "127.0.0.1",
+		ServerHost:       "::1",
 		PortStrict:       9999, // Intentional non-existent strict port to force fallback!
 		PortDisaster:     portDisaster,
 		PinnedSPKIHashes: []string{spkiDisasterHex},
@@ -159,7 +159,7 @@ func TestTransportEchoAndSPKIPinning(t *testing.T) {
 
 	// 3. Test Disaster Port with Wrong SPKI Pinning (Must be rejected with MITM protection!)
 	clientBadSPKI := NewClient(ClientConfig{
-		ServerHost:       "127.0.0.1",
+		ServerHost:       "::1",
 		PortStrict:       9999, // Force fallback to disaster
 		PortDisaster:     portDisaster,
 		PinnedSPKIHashes: []string{"0000000000000000000000000000000000000000000000000000000000000000"}, // Fake wrong hash!

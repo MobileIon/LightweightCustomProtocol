@@ -26,6 +26,7 @@ type ClientConfig struct {
 	PortDisaster       int           // Default 855
 	PinnedSPKIHashes   []string      // Uppercase hex SPKI SHA-256 hashes for port 855
 	IPv6RaceWindow     time.Duration // Default 1000ms
+	StaticFallbackIPv6 string        // Optional hardcoded IPv6 fallback
 	StaticFallbackIPv4 string        // Optional hardcoded IPv4 fallback
 	InsecureSkipCA     bool          // For local testing
 }
@@ -65,11 +66,18 @@ func (c *LcpClient) Dial(ctx context.Context) (*quic.Conn, error) {
 
 	// 1. Resolve host addresses
 	v6Addrs, v4Addrs := c.resolveAddresses(ctx, c.cfg.ServerHost)
+	if len(v6Addrs) == 0 && c.cfg.StaticFallbackIPv6 != "" {
+		if ip := net.ParseIP(c.cfg.StaticFallbackIPv6); ip != nil {
+			v6Addrs = append(v6Addrs, ip)
+		}
+	}
 	if len(v4Addrs) == 0 && c.cfg.StaticFallbackIPv4 != "" {
 		v4Addrs = append(v4Addrs, net.ParseIP(c.cfg.StaticFallbackIPv4))
 	}
 
 	hasGlobalV6 := hasGlobalIPv6Route()
+
+	canUseV6 := (hasGlobalV6 || (len(v6Addrs) > 0 && v6Addrs[0].IsLoopback())) && len(v6Addrs) > 0
 
 	quicCfg := &quic.Config{
 		EnableDatagrams: true,
@@ -78,7 +86,7 @@ func (c *LcpClient) Dial(ctx context.Context) (*quic.Conn, error) {
 	}
 
 	// Tier 1: IPv6 + Port 856 (Strict Web PKI CA) with 1000ms race window
-	if hasGlobalV6 && len(v6Addrs) > 0 {
+	if canUseV6 {
 		targetV6Strict := net.JoinHostPort(v6Addrs[0].String(), fmt.Sprintf("%d", c.cfg.PortStrict))
 		raceCtx, raceCancel := context.WithTimeout(ctx, c.cfg.IPv6RaceWindow)
 
@@ -126,7 +134,7 @@ func (c *LcpClient) Dial(ctx context.Context) (*quic.Conn, error) {
 	}
 
 	// Tier 3: IPv6 + Port 855 (Disaster Recovery with SPKI Pinning)
-	if hasGlobalV6 && len(v6Addrs) > 0 && len(c.cfg.PinnedSPKIHashes) > 0 {
+	if canUseV6 && len(c.cfg.PinnedSPKIHashes) > 0 {
 		targetV6Disaster := net.JoinHostPort(v6Addrs[0].String(), fmt.Sprintf("%d", c.cfg.PortDisaster))
 		tlsDisaster := c.buildTLSConfig(true, c.cfg.ServerHost)
 		conn, err := quic.DialAddr(ctx, targetV6Disaster, tlsDisaster, quicCfg)
@@ -270,7 +278,22 @@ func isGlobalUnicastIPv6(ip net.IP) bool {
 		return false
 	}
 	// Must start with 2000::/3 (i.e. 0x20 to 0x3F)
-	return (ip[0] & 0xE0) == 0x20
+	if (ip[0] & 0xE0) != 0x20 {
+		return false
+	}
+	// Exclude Teredo 2001:0000::/32
+	if ip[0] == 0x20 && ip[1] == 0x01 && ip[2] == 0x00 && ip[3] == 0x00 {
+		return false
+	}
+	// Exclude Fake-IP 2001:2::/48
+	if ip[0] == 0x20 && ip[1] == 0x01 && ip[2] == 0x00 && ip[3] == 0x02 {
+		return false
+	}
+	// Exclude 6to4 2002::/16
+	if ip[0] == 0x20 && ip[1] == 0x02 {
+		return false
+	}
+	return true
 }
 
 func hasGlobalIPv6Route() bool {
