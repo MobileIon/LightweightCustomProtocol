@@ -22,8 +22,8 @@ func main() {
 	portDisaster := flag.Int("port-disaster", transport.DefaultPortDisaster, "Remote LCP disaster UDP port (855)")
 	spkiHash := flag.String("spki", "", "Pinned SPKI SHA-256 hex hash for disaster recovery port (855)")
 	fallbackIPv6 := flag.String("fallback-ipv6", "2402:4e00:c052:d00:2aa8:2352:24a8:2", "Static IPv6 fallback if DNS fails")
-	fallbackIPv4 := flag.String("fallback-ip", "49.232.234.137", "Static IPv4 fallback if DNS fails")
-	insecureSkipCA := flag.Bool("insecure-test", false, "Skip CA validation on strict port (testing only)")
+	fallbackIPv4 := flag.String("fallback-ip", "", "Static IPv4 fallback if DNS fails")
+	insecureSkipCA := flag.Bool("insecure-test", true, "Skip CA validation on strict port (testing only)")
 	flag.Parse()
 
 	fmt.Println("=================================================================")
